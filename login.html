@@ -15,12 +15,12 @@
         </div>
         <div style="width: 100%; max-width: 320px;">
             <div class="form-group mb-3">
-                <input type="text" id="username" class="form-control text-center" placeholder="ชื่อผู้ใช้ (Username)">
+                <input type="text" id="username" class="form-control text-center" placeholder="ชื่อผู้ใช้ (Username)" onkeypress="if(event.key === 'Enter') window.executeLogin()">
             </div>
             <div class="form-group mb-4">
-                <input type="password" id="password" class="form-control text-center" placeholder="รหัสผ่าน (Password)">
+                <input type="password" id="password" class="form-control text-center" placeholder="รหัสผ่าน (Password)" onkeypress="if(event.key === 'Enter') window.executeLogin()">
             </div>
-            <button class="btn-pill btn-blue w-100" onclick="executeLogin()">เข้าสู่ระบบ</button>
+            <button class="btn-pill btn-blue w-100" onclick="window.executeLogin()">เข้าสู่ระบบ</button>
         </div>
     </div>
 
@@ -47,8 +47,8 @@
             try {
                 const usersSnapshot = await getDocs(collection(db, "users"));
                 if (usersSnapshot.empty) {
-                    await setDoc(doc(db, "users", "ADMIN99"), { user_id: "ADMIN99", prefix: "นาย", firstname: "สมชาย", lastname: "ใจดี", password: "1234", job_position: "ผู้ดูแลระบบ", work_location: "สำนักงานใหญ่", Department: "IT-ADMIN", start_date: "2020-01-15", Phone_number: "0812345678", role: "admin", avatar: "" });
-                    await setDoc(doc(db, "users", "CHA2546"), { user_id: "CHA2546", prefix: "นาย", firstname: "วิจิตรกมล", lastname: "สารการ", password: "1234", job_position: "เจ้าหน้าที่สรรหา", work_location: "สำนักงานใหญ่", Department: "CHA-ENC", start_date: "2022-05-01", Phone_number: "0885558866", role: "user", avatar: "" });
+                    await setDoc(doc(db, "users", "ADMIN99"), { user_id: "ADMIN99", prefix: "นาย", frstname: "สมชาย", lastname: "ใจดี", password: "1234", job_position: "ผู้ดูแลระบบ", work_location: "สำนักงานใหญ่", Department: "IT-ADMIN", start_date: "2020-01-15", Phone_number: "0812345678", role: "admin", Image_file: "" });
+                    await setDoc(doc(db, "users", "CHA2546"), { user_id: "CHA2546", prefix: "นาย", frstname: "วิจิตรกมล", lastname: "สารการ", password: "1234", job_position: "เจ้าหน้าที่สรรหา", work_location: "สำนักงานใหญ่", Department: "CHA-ENC", start_date: "2022-05-01", Phone_number: "0885558866", role: "user", Image_file: "" });
                     
                     const defaultFuels = [
                         { id: "1", type: "น้ำมัน", name: "แก๊สโซฮอล์ 95", rate: 3.85 },
@@ -65,7 +65,7 @@
             const u = document.getElementById('username').value.trim();
             const p = document.getElementById('password').value;
             
-            if(!u || !p) return Swal.fire('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบ', 'warning');
+            if(!u || !p) return Swal.fire({ title: 'แจ้งเตือน', text: 'กรุณากรอกข้อมูลให้ครบ', icon: 'warning', confirmButtonText: 'ตกลง' });
 
             try {
                 const userDoc = await getDoc(doc(db, "users", u));
@@ -74,15 +74,15 @@
                     localStorage.setItem('session_user_id', matchedUser.user_id);
                     
                     Swal.fire({
-                        icon: 'success', title: 'เข้าสู่ระบบสำเร็จ', text: `ยินดีต้อนรับคุณ ${matchedUser.firstname}`, showConfirmButton: false, timer: 1500
+                        icon: 'success', title: 'เข้าสู่ระบบสำเร็จ', text: `ยินดีต้อนรับคุณ ${matchedUser.frstname}`, showConfirmButton: false, timer: 1500
                     }).then(() => {
                         window.location.href = matchedUser.role === 'admin' ? 'admin.html' : 'user.html';
                     });
                 } else {
-                    Swal.fire({ icon: 'error', title: 'ล้มเหลว', text: 'รหัสพนักงานหรือรหัสผ่านไม่ถูกต้อง' });
+                    Swal.fire({ icon: 'error', title: 'ล้มเหลว', text: 'รหัสพนักงานหรือรหัสผ่านไม่ถูกต้อง', confirmButtonText: 'ตกลง' });
                 }
             } catch (error) {
-                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อ Firebase ได้ ตรวจสอบการตั้งค่าเปิดฐานข้อมูลหรือยัง?', 'error');
+                Swal.fire({ title: 'ข้อผิดพลาด', text: 'ไม่สามารถเชื่อมต่อ Firebase ได้', icon: 'error', confirmButtonText: 'ตกลง' });
             }
         }
     </script>

@@ -88,6 +88,12 @@
                             <button class="btn-pill btn-blue" onclick="window.printReport()">🖨️ พิมพ์รายงานสรุป</button>
                         </div>
 
+                        <div class="summary-box row g-3 mb-4 no-print">
+                            <div class="col-md-4"><div class="summary-card h-100"><h3>รวมยอดเบิกสะสมตลอดชีพ (บาท)</h3><p id="sum-total">0.00</p></div></div>
+                            <div class="col-md-4"><div class="summary-card h-100"><h3>ระยะทางรวมตลอดชีพ (กม.)</h3><p id="sum-km">0</p></div></div>
+                            <div class="col-md-4"><div class="summary-card h-100" style="border-left: 4px solid #f59e0b !important;"><h3>ระยะทางประจำเดือนที่เลือก (กม.)</h3><p id="sum-month-km" class="text-warning fw-bold">0</p></div></div>
+                        </div>
+
                         <div class="row mb-4 align-items-center no-print">
                             <div class="col-md-5"><label class="form-label fw-bold">📅 คัดกรองเลือกดูตามรายเดือน:</label><input type="month" id="user-report-month" class="form-control"></div>
                         </div>

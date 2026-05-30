@@ -122,9 +122,7 @@ window.addNewUser = function() {
                <input id="swal-sdate" class="swal2-input" type="date" placeholder="วันที่เริ่มงาน" style="width: 80%;">
                <input id="swal-phone" class="swal2-input" placeholder="เบอร์โทรศัพท์ (Phone_number)" style="width: 80%;">
                <select id="swal-role" class="swal2-input" style="width: 80%;"><option value="user">User</option><option value="admin">Admin</option></select>`,
-        showCancelButton: true, 
-        confirmButtonText: 'ตกลง (บันทึก)',
-        cancelButtonText: 'ยกเลิก',
+        showCancelButton: true, confirmButtonText: 'ตกลง (บันทึก)', cancelButtonText: 'ยกเลิก',
         preConfirm: () => {
             const uid = document.getElementById('swal-uid').value.trim();
             if(!uid) { Swal.showValidationMessage('กรุณากรอกรหัสพนักงาน'); return false; }
@@ -147,19 +145,8 @@ window.addNewUser = function() {
 }
 
 window.deleteUser = function(uid) {
-    Swal.fire({ 
-        title: 'ต้องการลบพนักงานคนนี้ใช่หรือไม่?', 
-        icon: 'warning', 
-        showCancelButton: true, 
-        confirmButtonColor: '#ef4444', 
-        confirmButtonText: 'ตกลง (ลบทิ้ง)',
-        cancelButtonText: 'ยกเลิก'
-    }).then(async (result) => {
-        if (result.isConfirmed) { 
-            await deleteDoc(doc(db, "users", uid)); 
-            renderEmployeeList(); 
-            Swal.fire({title: 'ลบสำเร็จ', text: '', icon: 'success', confirmButtonText: 'ตกลง'}); 
-        }
+    Swal.fire({ title: 'ต้องการลบพนักงานคนนี้ใช่หรือไม่?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'ตกลง (ลบทิ้ง)', cancelButtonText: 'ยกเลิก' }).then(async (result) => {
+        if (result.isConfirmed) { await deleteDoc(doc(db, "users", uid)); renderEmployeeList(); Swal.fire({title: 'ลบสำเร็จ', text: '', icon: 'success', confirmButtonText: 'ตกลง'}); }
     });
 }
 
@@ -179,10 +166,7 @@ window.editUser = async function(uid) {
                <input id="swal-edit-phone" class="swal2-input" value="${u.Phone_number || ''}" placeholder="เบอร์โทรศัพท์" style="width: 80%;">
                <input id="swal-edit-dept" class="swal2-input" value="${u.Department || ''}" placeholder="แผนก" style="width: 80%;">
                <select id="swal-edit-role" class="swal2-input" style="width: 80%;"><option value="user" ${u.role==='user'?'selected':''}>User</option><option value="admin" ${u.role==='admin'?'selected':''}>Admin</option></select>`,
-        showCancelButton: true, 
-        confirmButtonText: 'ตกลง (บันทึก)', 
-        cancelButtonText: 'ยกเลิก',
-        confirmButtonColor: '#f59e0b'
+        showCancelButton: true, confirmButtonText: 'ตกลง (บันทึก)', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#f59e0b'
     }).then(async (result) => {
         if (result.isConfirmed) {
             let updateData = {
@@ -198,8 +182,7 @@ window.editUser = async function(uid) {
             if(newPass !== '') { updateData.password = newPass; }
 
             await updateDoc(doc(db, "users", uid), updateData);
-            renderEmployeeList(); 
-            Swal.fire({title: 'บันทึกสำเร็จ', text: 'อัปเดตข้อมูลพนักงานเรียบร้อย', icon: 'success', confirmButtonText: 'ตกลง'});
+            renderEmployeeList(); Swal.fire({title: 'บันทึกสำเร็จ', text: 'อัปเดตข้อมูลพนักงานเรียบร้อย', icon: 'success', confirmButtonText: 'ตกลง'});
         }
     });
 }
@@ -242,6 +225,7 @@ window.renderAllReports = async function() {
     let totalKm = 0, totalBaht = 0;
     filtered.forEach(r => {
         let statusText = r.Approve_disbursement === 'P' ? 'รออนุมัติ' : (r.Approve_disbursement === 'Y' ? 'อนุมัติ' : 'ไม่อนุมัติ');
+        if(r.Approve_disbursement === 'N' && r.reason) { statusText += `<br><small class="text-danger fw-bold">สาเหตุ: ${r.reason}</small>`; }
         if(r.Approve_disbursement !== 'N') {
             totalKm += parseFloat(r.distance_km) || 0; 
             totalBaht += parseFloat(r.Reimbursable_expense) || 0;
@@ -251,6 +235,21 @@ window.renderAllReports = async function() {
     document.getElementById('rep-sum-count').innerText = `${filtered.length} รายการ`;
     document.getElementById('rep-sum-km').innerText = `${totalKm.toFixed(2)} กม.`;
     document.getElementById('rep-sum-total').innerText = `฿${totalBaht.toFixed(2)}`;
+}
+
+// ฟังก์ชันสำหรับกดดูรูปภาพขนาดใหญ่กลางจอ
+window.viewImageFullscreen = function(url) {
+    Swal.fire({
+        imageUrl: url,
+        imageAlt: 'หลักฐานแนบ',
+        width: 'auto',
+        padding: 0,
+        showConfirmButton: false,
+        showCloseButton: true,
+        background: 'transparent',
+        backdrop: 'rgba(0,0,0,0.85)',
+        customClass: { image: 'rounded border border-2 border-white' }
+    });
 }
 
 async function renderApprovalQueue() {
@@ -276,7 +275,7 @@ async function renderApprovalQueue() {
         
         let proofImgHtml = '<span class="text-muted">ไม่มีรูปแนบ</span>';
         if (r.Image_file) {
-            proofImgHtml = `<a href="${r.Image_file}" target="_blank" rel="noopener noreferrer" class="clickable-image-link" title="คลิกเพื่อดูรูปใหญ่ในแท็บใหม่"><img src="${r.Image_file}" class="receipt-image-thumbnail" alt="หลักฐานแนบ"></a>`;
+            proofImgHtml = `<img src="${r.Image_file}" class="receipt-image-thumbnail" title="คลิกเพื่อดูรูปใหญ่" onclick="window.viewImageFullscreen('${r.Image_file}')">`;
         }
 
         let requestorAvatar = u.Image_file || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150";
@@ -307,12 +306,12 @@ window.processApproval = function(reportId, newStatus) {
             showCancelButton: true, 
             confirmButtonColor: '#ef4444', 
             confirmButtonText: 'ตกลง (ปฏิเสธ)',
-            cancelButtonText: 'ยกเลิก'
+            cancelButtonText: 'ยกเลิก',
+            inputValidator: (value) => { if (!value) return 'กรุณาระบุเหตุผลที่ไม่อนุมัติด้วยครับ'; }
         }).then(async (result) => {
             if (result.isConfirmed) { 
-                await updateDoc(doc(db, "fuel", reportId), { Approve_disbursement: 'N', reason: result.value || 'ไม่ได้ระบุเหตุผล' });
-                renderApprovalQueue(); 
-                Swal.fire({title: 'บันทึกสำเร็จ', text: 'ปฏิเสธคำขอแล้ว', icon: 'success', confirmButtonText: 'ตกลง'}); 
+                await updateDoc(doc(db, "fuel", reportId), { Approve_disbursement: 'N', reason: result.value });
+                renderApprovalQueue(); Swal.fire({title: 'บันทึกสำเร็จ', text: 'ปฏิเสธคำขอแล้ว', icon: 'success', confirmButtonText: 'ตกลง'}); 
             }
         });
     } else {
@@ -326,8 +325,7 @@ window.processApproval = function(reportId, newStatus) {
         }).then(async (result) => {
             if(result.isConfirmed) { 
                 await updateDoc(doc(db, "fuel", reportId), { Approve_disbursement: 'Y' });
-                renderApprovalQueue(); 
-                Swal.fire({title: 'อนุมัติเรียบร้อย', text: '', icon: 'success', confirmButtonText: 'ตกลง'}); 
+                renderApprovalQueue(); Swal.fire({title: 'อนุมัติเรียบร้อย', text: '', icon: 'success', confirmButtonText: 'ตกลง'}); 
             }
         });
     }
@@ -369,49 +367,26 @@ window.addNewFuel = function() {
         html: `<input id="swal-f-name" class="swal2-input" placeholder="เช่น ดีเซล B7, รถส่วนตัว">
                <input id="swal-f-rate" class="swal2-input" type="number" step="0.01" placeholder="บาท ต่อ กิโลเมตร">
                <select id="swal-f-type" class="swal2-input" style="width: 80%;"><option value="น้ำมัน">น้ำมัน</option><option value="ไฟฟ้า">ไฟฟ้า</option><option value="แก๊ส">แก๊ส</option></select>`,
-        showCancelButton: true, 
-        confirmButtonText: 'ตกลง (บันทึก)',
-        cancelButtonText: 'ยกเลิก',
+        showCancelButton: true, confirmButtonText: 'ตกลง (บันทึก)', cancelButtonText: 'ยกเลิก',
         preConfirm: () => { return { name: document.getElementById('swal-f-name').value, rate: parseFloat(document.getElementById('swal-f-rate').value), type: document.getElementById('swal-f-type').value } }
     }).then(async (result) => {
         if(result.isConfirmed && result.value.name && !isNaN(result.value.rate)) {
             let id = "FUEL" + Date.now();
             await setDoc(doc(db, "fuels", id), { id: id, ...result.value });
-            loadFuelSettings(); 
-            Swal.fire({title: 'สำเร็จ', text: 'บันทึกราคากลางแล้ว', icon: 'success', confirmButtonText: 'ตกลง'});
+            loadFuelSettings(); Swal.fire({title: 'สำเร็จ', text: 'บันทึกราคากลางแล้ว', icon: 'success', confirmButtonText: 'ตกลง'});
         }
     });
 }
 
 window.deleteFuel = function(id) {
-    Swal.fire({ 
-        title: 'ลบประเภทเชื้อเพลิงนี้?', 
-        icon: 'warning', 
-        showCancelButton: true,
-        confirmButtonText: 'ตกลง (ลบ)',
-        cancelButtonText: 'ยกเลิก'
-    }).then(async (result) => {
-        if (result.isConfirmed) { 
-            await deleteDoc(doc(db, "fuels", id)); 
-            loadFuelSettings(); 
-            Swal.fire({title: 'ลบสำเร็จ', text: '', icon: 'success', confirmButtonText: 'ตกลง'}); 
-        }
+    Swal.fire({ title: 'ลบประเภทเชื้อเพลิงนี้?', icon: 'warning', showCancelButton: true, confirmButtonText: 'ตกลง (ลบ)', cancelButtonText: 'ยกเลิก' }).then(async (result) => {
+        if (result.isConfirmed) { await deleteDoc(doc(db, "fuels", id)); loadFuelSettings(); Swal.fire({title: 'ลบสำเร็จ', text: '', icon: 'success', confirmButtonText: 'ตกลง'}); }
     });
 }
 
 window.printReport = function() { window.print(); }
 window.exitSystem = function() { 
-    Swal.fire({
-        title: 'ออกจากระบบ', 
-        icon: 'question', 
-        showCancelButton: true, 
-        confirmButtonColor: '#ef4444', 
-        confirmButtonText: 'ตกลง (ออกจากระบบ)',
-        cancelButtonText: 'ยกเลิก'
-    }).then((result) => { 
-        if(result.isConfirmed) { 
-            localStorage.removeItem('session_user_id'); 
-            window.location.href = 'login.html'; 
-        } 
+    Swal.fire({ title: 'ออกจากระบบ', icon: 'question', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'ตกลง (ออกจากระบบ)', cancelButtonText: 'ยกเลิก' }).then((result) => { 
+        if(result.isConfirmed) { localStorage.removeItem('session_user_id'); window.location.href = 'login.html'; } 
     }); 
 }

@@ -114,7 +114,7 @@ window.saveWorkReport = async function() {
     const detail = document.getElementById('w-detail').value.trim();
     const fileInput = document.getElementById('w-file');
     
-    if(!wDate || !fuelType || isNaN(start) || isNaN(end) || !detail) return Swal.fire({ icon: 'warning', title: 'กรุณากรอกข้อมูลงานและเลขไมล์ให้ครบถ้วน', confirmButtonText: 'ตกลง' });
+    if(!wDate || !fuelType || isNaN(start) || isNaN(end) || !detail) return Swal.fire({ icon: 'warning', title: 'กรุณากรอกข้อมูลให้ครบถ้วน', confirmButtonText: 'ตกลง' });
     if (end <= start) return Swal.fire({ icon: 'error', title: 'เลขไมล์สิ้นสุดต้องมากกว่าเลขไมล์เริ่มต้น', confirmButtonText: 'ตกลง' });
 
     const distance = end - start;
@@ -139,7 +139,7 @@ window.saveWorkReport = async function() {
             await setDoc(doc(db, "fuel", newId), reportData);
         }
         
-        Swal.fire({ icon: 'success', title: 'ส่งคำขอเบิกค่าเดินทางสำเร็จ!', confirmButtonText: 'ตกลง' }).then(() => {
+        Swal.fire({ icon: 'success', title: 'ส่งคำขอเบิกสำเร็จ!', confirmButtonText: 'ตกลง' }).then(() => {
             document.getElementById('edit-report-id').value = ''; 
             document.getElementById('w-start-mile').value = ''; 
             document.getElementById('w-end-mile').value = ''; 
@@ -172,31 +172,33 @@ window.renderUserReports = async function() {
             filteredCount++; 
         }
         let statusText = r.Approve_disbursement === 'P' ? 'รอตรวจสอบ' : (r.Approve_disbursement === 'Y' ? 'อนุมัติ' : 'ไม่อนุมัติ');
-        let actionBtns = r.Approve_disbursement === 'P' ? `<button class="btn-pill btn-edit py-1 px-2 me-1" style="font-size:12px;" onclick="window.editReport('${r.id}')">✏️</button><button class="btn-pill btn-red py-1 px-2" style="font-size:12px;" onclick="window.deleteReport('${r.id}')">🗑️</button>` : '-';
-        if(r.Approve_disbursement === 'N' && r.reason) { statusText += `<br><small class="text-danger">เหตุผล: ${r.reason}</small>`; }
+        let actionBtns = r.Approve_disbursement === 'P' ? `<button class="btn-pill btn-edit py-1 px-2 me-1" style="font-size:12px;" onclick="window.editReport('${r.id}')">✏️</button><button class="btn-pill btn-red py-1 px-2" style="font-size:12px;" onclick="window.deleteReport('${r.id}')">🗑️</button>` : '<span class="no-print">-</span>';
         
-        tbody.innerHTML += `<tr><td>${idx + 1}</td><td>${r.work_date}</td><td>${r.work_time || '-'}</td><td>${r.work_detail}</td><td>${r.distance_km} กม.</td><td class="text-success">฿${r.Reimbursable_expense}</td><td><span class="status-tag status-${r.Approve_disbursement}">${statusText}</span></td><td>${actionBtns}</td></tr>`;
+        if(r.Approve_disbursement === 'N' && r.reason) { statusText += `<br><small class="text-danger fw-bold">สาเหตุ: ${r.reason}</small>`; }
+        
+        tbody.innerHTML += `<tr><td>${idx + 1}</td><td>${r.work_date}</td><td>${r.work_time || '-'}</td><td>${r.work_detail}</td><td>${r.distance_km} กม.</td><td class="text-success">฿${r.Reimbursable_expense}</td><td><span class="status-tag status-${r.Approve_disbursement}">${statusText}</span></td><td class="no-print">${actionBtns}</td></tr>`;
     });
     
     document.getElementById('user-bill-count').innerText = `${filteredCount} รายการ`; 
     document.getElementById('user-bill-km').innerText = `${filteredKm.toFixed(2)} กม.`; 
     document.getElementById('user-bill-total').innerText = `฿${filteredBaht.toFixed(2)}`;
+
+    let allTimeBaht = 0;
+    let allTimeKm = 0;
+    myReports.forEach(r => {
+        if(r.Approve_disbursement === 'Y' || r.Approve_disbursement === 'P') { 
+            allTimeBaht += parseFloat(r.Reimbursable_expense) || 0; 
+            allTimeKm += parseFloat(r.distance_km) || 0; 
+        }
+    });
+    if(document.getElementById('sum-total')) document.getElementById('sum-total').innerText = allTimeBaht.toFixed(2);
+    if(document.getElementById('sum-km')) document.getElementById('sum-km').innerText = allTimeKm.toFixed(2);
+    if(document.getElementById('sum-month-km')) document.getElementById('sum-month-km').innerText = filteredKm.toFixed(2);
 }
 
 window.deleteReport = function(id) {
-    Swal.fire({ 
-        title: 'ต้องการลบคำขอนี้ใช่หรือไม่?', 
-        icon: 'warning', 
-        showCancelButton: true, 
-        confirmButtonColor: '#ef4444', 
-        confirmButtonText: 'ตกลง (ลบทิ้ง)',
-        cancelButtonText: 'ยกเลิก'
-    }).then(async (result) => {
-        if (result.isConfirmed) { 
-            await deleteDoc(doc(db, "fuel", id)); 
-            window.renderUserReports(); 
-            Swal.fire({title: 'ลบสำเร็จ', text: '', icon: 'success', confirmButtonText: 'ตกลง'}); 
-        }
+    Swal.fire({ title: 'ต้องการลบคำขอนี้ใช่หรือไม่?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'ตกลง (ลบทิ้ง)', cancelButtonText: 'ยกเลิก' }).then(async (result) => {
+        if (result.isConfirmed) { await deleteDoc(doc(db, "fuel", id)); window.renderUserReports(); Swal.fire({title: 'ลบสำเร็จ', text: '', icon: 'success', confirmButtonText: 'ตกลง'}); }
     });
 }
 
@@ -216,17 +218,7 @@ window.editReport = async function(id) {
 
 window.printReport = function() { window.print(); }
 window.exitSystem = function() { 
-    Swal.fire({ 
-        title: 'ออกจากระบบ', 
-        icon: 'question', 
-        showCancelButton: true, 
-        confirmButtonColor: '#ef4444', 
-        confirmButtonText: 'ตกลง (ออกจากระบบ)',
-        cancelButtonText: 'ยกเลิก'
-    }).then((result) => { 
-        if(result.isConfirmed) { 
-            localStorage.removeItem('session_user_id'); 
-            window.location.href = 'login.html'; 
-        } 
+    Swal.fire({ title: 'ออกจากระบบ', icon: 'question', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'ตกลง (ออกจากระบบ)', cancelButtonText: 'ยกเลิก' }).then((result) => { 
+        if(result.isConfirmed) { localStorage.removeItem('session_user_id'); window.location.href = 'login.html'; } 
     }); 
 }

@@ -1,4 +1,3 @@
-/* style.css - Professional Desktop Dashboard Theme */
 @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
 
 * {
@@ -271,14 +270,13 @@ body {
    การจัดการรูปภาพ (Avatar & Images)
 ========================================= */
 
-/* กำหนดขนาดสูงสุดให้รูปภาพ ป้องกันการล้นเลย์เอาต์ */
+/* ป้องกันภาพล้นขอบ */
 .avatar, .avatar-sm, .admin-user-tbody img, .user-list-tbody img, #header-avatar {
     max-width: 100% !important;
     max-height: 100% !important;
     object-fit: cover;
 }
 
-/* รูปโปรไฟล์ขนาดใหญ่ */
 .avatar {
     width: 120px !important;
     height: 120px !important;
@@ -291,7 +289,6 @@ body {
     margin: 0 auto;
 }
 
-/* รูปโปรไฟล์ขนาดเล็ก */
 .avatar-sm {
     width: 45px !important;
     height: 45px !important;
@@ -301,14 +298,12 @@ body {
     border: 2px solid #e2e8f0;
 }
 
-/* กำหนดขนาดที่แน่นอนให้รูปพรีวิวแก้ไขโปรไฟล์ */
 #adm-avatar-display, #profile-avatar-display {
     max-width: 130px;
     max-height: 130px;
     object-fit: cover;
 }
 
-/* รูปหลักฐานแนบเบิกน้ำมัน ทั่วไป */
 .receipt-img {
     width: 100%;
     height: 180px;
@@ -319,7 +314,7 @@ body {
     margin-top: 15px;
 }
 
-/* รูปหลักฐานแบบย่อสำหรับคิวการอนุมัติ (คลิกได้) */
+/* รูปหลักฐานแบบย่อ (คลิกได้) */
 .receipt-image-thumbnail {
     max-width: 200px;
     max-height: 150px;
@@ -334,10 +329,33 @@ body {
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.clickable-image-link {
-    display: block;
-    width: 100%;
-    height: 100%;
+/* =========================================
+   แก้ไขรูปโปรไฟล์และชื่อมุมขวาบน (Header Profile) ไม่ให้ล้น
+========================================= */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #eff6ff; 
+    padding: 5px 16px 5px 6px;
+    border: 1px solid #dbeafe;
+    border-radius: 30px;       
+}
+
+.avatar-img, #header-avatar {
+    width: 38px !important;        
+    height: 38px !important;       
+    border-radius: 50% !important;  
+    object-fit: cover !important;   
+    object-position: center !important; 
+    border: 2px solid #ffffff;     
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.user-name, #header-user-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #2563eb; 
 }
 
 /* =========================================
@@ -379,33 +397,4 @@ body {
         color: #000 !important; 
         padding: 8px !important;
     }
-}
-
-/* =========================================
-   แก้ไขรูปโปรไฟล์และชื่อมุมขวาบน (Header Profile) ไม่ให้ล้น
-========================================= */
-.user-profile {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background-color: #eff6ff; /* เพิ่มพื้นหลังสีฟ้าอ่อนนุ่มๆ ให้ดูเด่น */
-    padding: 5px 16px 5px 6px;
-    border: 1px solid #dbeafe;
-    border-radius: 30px;       /* ทำเป็นทรงมนแคปซูลสไตล์ Dashboard */
-}
-
-.avatar-img, #header-avatar {
-    width: 38px !important;        /* กำหนดความกว้างตายตัวพอดีสายตา */
-    height: 38px !important;       /* กำหนดความสูงตายตัวให้เท่ากัน */
-    border-radius: 50% !important;  /* บังคับเป็นวงกลมเป๊ะๆ */
-    object-fit: cover !important;   /* ป้องกันรูปภาพยืดหรือบี้เสียทรง */
-    object-position: center !important; /* จัดโฟกัสให้อยู่กึ่งกลางภาพ */
-    border: 2px solid #ffffff;     /* ขอบสีขาวตัดกับพื้นหลัง */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.user-name, #header-user-name {
-    font-size: 14px;
-    font-weight: 700;
-    color: #2563eb; /* ข้อความชื่อสีน้ำเงินเข้ากับธีมระบบ */
 }
