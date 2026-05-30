@@ -75,7 +75,7 @@ window.updateAdminProfile = async function() {
         if(base64Img) document.getElementById('adm-avatar-display').src = base64Img;
         document.getElementById('adm-avatar').value = ''; 
         updateHeaderDisplay();
-        Swal.fire({ icon: 'success', title: 'อัปเดตสำเร็จ', text: 'บันทึกข้อมูลเรียบร้อย' });
+        Swal.fire({ icon: 'success', title: 'อัปเดตสำเร็จ', text: 'บันทึกข้อมูลเรียบร้อย', confirmButtonText: 'ตกลง' });
     };
 
     const fileInput = document.getElementById('adm-avatar');
@@ -122,7 +122,9 @@ window.addNewUser = function() {
                <input id="swal-sdate" class="swal2-input" type="date" placeholder="วันที่เริ่มงาน" style="width: 80%;">
                <input id="swal-phone" class="swal2-input" placeholder="เบอร์โทรศัพท์ (Phone_number)" style="width: 80%;">
                <select id="swal-role" class="swal2-input" style="width: 80%;"><option value="user">User</option><option value="admin">Admin</option></select>`,
-        showCancelButton: true, confirmButtonText: 'บันทึก',
+        showCancelButton: true, 
+        confirmButtonText: 'ตกลง (บันทึก)',
+        cancelButtonText: 'ยกเลิก',
         preConfirm: () => {
             const uid = document.getElementById('swal-uid').value.trim();
             if(!uid) { Swal.showValidationMessage('กรุณากรอกรหัสพนักงาน'); return false; }
@@ -139,14 +141,25 @@ window.addNewUser = function() {
             data.Image_file = "";
             await setDoc(doc(db, "users", data.user_id), data);
             renderEmployeeList();
-            Swal.fire('สำเร็จ', 'เพิ่มพนักงานใหม่เรียบร้อย', 'success');
+            Swal.fire({title: 'สำเร็จ', text: 'เพิ่มพนักงานใหม่เรียบร้อย', icon: 'success', confirmButtonText: 'ตกลง'});
         }
     });
 }
 
 window.deleteUser = function(uid) {
-    Swal.fire({ title: 'ต้องการลบพนักงานคนนี้ใช่หรือไม่?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'ลบทิ้ง' }).then(async (result) => {
-        if (result.isConfirmed) { await deleteDoc(doc(db, "users", uid)); renderEmployeeList(); Swal.fire('ลบสำเร็จ', '', 'success'); }
+    Swal.fire({ 
+        title: 'ต้องการลบพนักงานคนนี้ใช่หรือไม่?', 
+        icon: 'warning', 
+        showCancelButton: true, 
+        confirmButtonColor: '#ef4444', 
+        confirmButtonText: 'ตกลง (ลบทิ้ง)',
+        cancelButtonText: 'ยกเลิก'
+    }).then(async (result) => {
+        if (result.isConfirmed) { 
+            await deleteDoc(doc(db, "users", uid)); 
+            renderEmployeeList(); 
+            Swal.fire({title: 'ลบสำเร็จ', text: '', icon: 'success', confirmButtonText: 'ตกลง'}); 
+        }
     });
 }
 
@@ -166,7 +179,10 @@ window.editUser = async function(uid) {
                <input id="swal-edit-phone" class="swal2-input" value="${u.Phone_number || ''}" placeholder="เบอร์โทรศัพท์" style="width: 80%;">
                <input id="swal-edit-dept" class="swal2-input" value="${u.Department || ''}" placeholder="แผนก" style="width: 80%;">
                <select id="swal-edit-role" class="swal2-input" style="width: 80%;"><option value="user" ${u.role==='user'?'selected':''}>User</option><option value="admin" ${u.role==='admin'?'selected':''}>Admin</option></select>`,
-        showCancelButton: true, confirmButtonText: 'บันทึก', confirmButtonColor: '#f59e0b'
+        showCancelButton: true, 
+        confirmButtonText: 'ตกลง (บันทึก)', 
+        cancelButtonText: 'ยกเลิก',
+        confirmButtonColor: '#f59e0b'
     }).then(async (result) => {
         if (result.isConfirmed) {
             let updateData = {
@@ -182,7 +198,8 @@ window.editUser = async function(uid) {
             if(newPass !== '') { updateData.password = newPass; }
 
             await updateDoc(doc(db, "users", uid), updateData);
-            renderEmployeeList(); Swal.fire('บันทึกสำเร็จ', 'อัปเดตข้อมูลพนักงานเรียบร้อย', 'success');
+            renderEmployeeList(); 
+            Swal.fire({title: 'บันทึกสำเร็จ', text: 'อัปเดตข้อมูลพนักงานเรียบร้อย', icon: 'success', confirmButtonText: 'ตกลง'});
         }
     });
 }
@@ -257,7 +274,6 @@ async function renderApprovalQueue() {
         let u = usersMap[r.user_id] || {};
         let actionButtons = `<div class="mt-3"><button class="btn-pill btn-green me-2 py-1 px-3" onclick="window.processApproval('${r.id}', 'Y')">✔️ อนุมัติ</button><button class="btn-pill btn-red py-1 px-3" onclick="window.processApproval('${r.id}', 'N')">❌ ไม่อนุมัติ</button></div>`;
         
-        // ทำให้ภาพหลักฐานเป็นลิงก์คลิกดูรูปใหญ่ได้
         let proofImgHtml = '<span class="text-muted">ไม่มีรูปแนบ</span>';
         if (r.Image_file) {
             proofImgHtml = `<a href="${r.Image_file}" target="_blank" rel="noopener noreferrer" class="clickable-image-link" title="คลิกเพื่อดูรูปใหญ่ในแท็บใหม่"><img src="${r.Image_file}" class="receipt-image-thumbnail" alt="หลักฐานแนบ"></a>`;
@@ -283,17 +299,35 @@ async function renderApprovalQueue() {
 
 window.processApproval = function(reportId, newStatus) {
     if(newStatus === 'N') {
-        Swal.fire({ title: 'ปฏิเสธการเบิกจ่าย', text: 'ระบุเหตุผลที่ไม่อนุมัติ:', input: 'text', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'ยืนยันปฏิเสธ' }).then(async (result) => {
+        Swal.fire({ 
+            title: 'ปฏิเสธการเบิกจ่าย', 
+            text: 'ระบุเหตุผลที่ไม่อนุมัติ:', 
+            input: 'text', 
+            icon: 'warning', 
+            showCancelButton: true, 
+            confirmButtonColor: '#ef4444', 
+            confirmButtonText: 'ตกลง (ปฏิเสธ)',
+            cancelButtonText: 'ยกเลิก'
+        }).then(async (result) => {
             if (result.isConfirmed) { 
                 await updateDoc(doc(db, "fuel", reportId), { Approve_disbursement: 'N', reason: result.value || 'ไม่ได้ระบุเหตุผล' });
-                renderApprovalQueue(); Swal.fire('บันทึกสำเร็จ', 'ปฏิเสธคำขอแล้ว', 'success'); 
+                renderApprovalQueue(); 
+                Swal.fire({title: 'บันทึกสำเร็จ', text: 'ปฏิเสธคำขอแล้ว', icon: 'success', confirmButtonText: 'ตกลง'}); 
             }
         });
     } else {
-        Swal.fire({ title: 'ยืนยันการอนุมัติยอดเงินนี้?', icon: 'question', showCancelButton: true, confirmButtonColor: '#10b981', confirmButtonText: 'อนุมัติจ่ายเงิน' }).then(async (result) => {
+        Swal.fire({ 
+            title: 'ยืนยันการอนุมัติยอดเงินนี้?', 
+            icon: 'question', 
+            showCancelButton: true, 
+            confirmButtonColor: '#10b981', 
+            confirmButtonText: 'ตกลง (อนุมัติจ่ายเงิน)',
+            cancelButtonText: 'ยกเลิก'
+        }).then(async (result) => {
             if(result.isConfirmed) { 
                 await updateDoc(doc(db, "fuel", reportId), { Approve_disbursement: 'Y' });
-                renderApprovalQueue(); Swal.fire('อนุมัติเรียบร้อย', '', 'success'); 
+                renderApprovalQueue(); 
+                Swal.fire({title: 'อนุมัติเรียบร้อย', text: '', icon: 'success', confirmButtonText: 'ตกลง'}); 
             }
         });
     }
@@ -322,10 +356,10 @@ window.updateFuelPrices = async function() {
             let newRate = parseFloat(input.value) || 0;
             await updateDoc(doc(db, "fuels", id), { rate: newRate });
         }
-        Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', text: 'อัปเดตเรทราคาเชื้อเพลิงทั้งหมดเรียบร้อยแล้ว' });
+        Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', text: 'อัปเดตเรทราคาเชื้อเพลิงทั้งหมดเรียบร้อยแล้ว', confirmButtonText: 'ตกลง' });
         loadFuelSettings();
     } catch(e) {
-        Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้', 'error');
+        Swal.fire({title: 'ข้อผิดพลาด', text: 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้', icon: 'error', confirmButtonText: 'ตกลง'});
     }
 }
 
@@ -335,22 +369,49 @@ window.addNewFuel = function() {
         html: `<input id="swal-f-name" class="swal2-input" placeholder="เช่น ดีเซล B7, รถส่วนตัว">
                <input id="swal-f-rate" class="swal2-input" type="number" step="0.01" placeholder="บาท ต่อ กิโลเมตร">
                <select id="swal-f-type" class="swal2-input" style="width: 80%;"><option value="น้ำมัน">น้ำมัน</option><option value="ไฟฟ้า">ไฟฟ้า</option><option value="แก๊ส">แก๊ส</option></select>`,
-        showCancelButton: true, confirmButtonText: 'บันทึก',
+        showCancelButton: true, 
+        confirmButtonText: 'ตกลง (บันทึก)',
+        cancelButtonText: 'ยกเลิก',
         preConfirm: () => { return { name: document.getElementById('swal-f-name').value, rate: parseFloat(document.getElementById('swal-f-rate').value), type: document.getElementById('swal-f-type').value } }
     }).then(async (result) => {
         if(result.isConfirmed && result.value.name && !isNaN(result.value.rate)) {
             let id = "FUEL" + Date.now();
             await setDoc(doc(db, "fuels", id), { id: id, ...result.value });
-            loadFuelSettings(); Swal.fire('สำเร็จ', 'บันทึกราคากลางแล้ว', 'success');
+            loadFuelSettings(); 
+            Swal.fire({title: 'สำเร็จ', text: 'บันทึกราคากลางแล้ว', icon: 'success', confirmButtonText: 'ตกลง'});
         }
     });
 }
 
 window.deleteFuel = function(id) {
-    Swal.fire({ title: 'ลบประเภทเชื้อเพลิงนี้?', icon: 'warning', showCancelButton: true }).then(async (result) => {
-        if (result.isConfirmed) { await deleteDoc(doc(db, "fuels", id)); loadFuelSettings(); Swal.fire('ลบสำเร็จ', '', 'success'); }
+    Swal.fire({ 
+        title: 'ลบประเภทเชื้อเพลิงนี้?', 
+        icon: 'warning', 
+        showCancelButton: true,
+        confirmButtonText: 'ตกลง (ลบ)',
+        cancelButtonText: 'ยกเลิก'
+    }).then(async (result) => {
+        if (result.isConfirmed) { 
+            await deleteDoc(doc(db, "fuels", id)); 
+            loadFuelSettings(); 
+            Swal.fire({title: 'ลบสำเร็จ', text: '', icon: 'success', confirmButtonText: 'ตกลง'}); 
+        }
     });
 }
 
 window.printReport = function() { window.print(); }
-window.exitSystem = function() { localStorage.removeItem('session_user_id'); window.location.href = 'login.html'; }
+window.exitSystem = function() { 
+    Swal.fire({
+        title: 'ออกจากระบบ', 
+        icon: 'question', 
+        showCancelButton: true, 
+        confirmButtonColor: '#ef4444', 
+        confirmButtonText: 'ตกลง (ออกจากระบบ)',
+        cancelButtonText: 'ยกเลิก'
+    }).then((result) => { 
+        if(result.isConfirmed) { 
+            localStorage.removeItem('session_user_id'); 
+            window.location.href = 'login.html'; 
+        } 
+    }); 
+}

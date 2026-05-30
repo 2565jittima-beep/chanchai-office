@@ -79,7 +79,7 @@ window.updateProfileData = async function() {
         if(base64Img) document.getElementById('profile-avatar-display').src = base64Img;
         document.getElementById('edit-avatar').value = ''; 
         updateHeaderDisplay(); 
-        Swal.fire({ icon: 'success', title: 'อัปเดตสำเร็จ', text: 'ข้อมูลส่วนตัวของคุณถูกบันทึกแล้ว' });
+        Swal.fire({ icon: 'success', title: 'อัปเดตสำเร็จ', text: 'ข้อมูลส่วนตัวของคุณถูกบันทึกแล้ว', confirmButtonText: 'ตกลง' });
     };
     const fileInput = document.getElementById('edit-avatar');
     if (fileInput.files.length > 0) { const r = new FileReader(); r.onload = e => executeUpdate(e.target.result); r.readAsDataURL(fileInput.files[0]); } else { executeUpdate(null); }
@@ -114,8 +114,8 @@ window.saveWorkReport = async function() {
     const detail = document.getElementById('w-detail').value.trim();
     const fileInput = document.getElementById('w-file');
     
-    if(!wDate || !fuelType || isNaN(start) || isNaN(end) || !detail) return Swal.fire({ icon: 'warning', title: 'กรุณากรอกข้อมูลงานและเลขไมล์ให้ครบถ้วน' });
-    if (end <= start) return Swal.fire({ icon: 'error', title: 'เลขไมล์สิ้นสุดต้องมากกว่าเลขไมล์เริ่มต้น' });
+    if(!wDate || !fuelType || isNaN(start) || isNaN(end) || !detail) return Swal.fire({ icon: 'warning', title: 'กรุณากรอกข้อมูลงานและเลขไมล์ให้ครบถ้วน', confirmButtonText: 'ตกลง' });
+    if (end <= start) return Swal.fire({ icon: 'error', title: 'เลขไมล์สิ้นสุดต้องมากกว่าเลขไมล์เริ่มต้น', confirmButtonText: 'ตกลง' });
 
     const distance = end - start;
     const expense = distance * currentRate;
@@ -139,7 +139,7 @@ window.saveWorkReport = async function() {
             await setDoc(doc(db, "fuel", newId), reportData);
         }
         
-        Swal.fire({ icon: 'success', title: 'ส่งคำขอเบิกค่าเดินทางสำเร็จ!' }).then(() => {
+        Swal.fire({ icon: 'success', title: 'ส่งคำขอเบิกค่าเดินทางสำเร็จ!', confirmButtonText: 'ตกลง' }).then(() => {
             document.getElementById('edit-report-id').value = ''; 
             document.getElementById('w-start-mile').value = ''; 
             document.getElementById('w-end-mile').value = ''; 
@@ -184,8 +184,19 @@ window.renderUserReports = async function() {
 }
 
 window.deleteReport = function(id) {
-    Swal.fire({ title: 'ต้องการลบคำขอนี้ใช่หรือไม่?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'ใช่, ลบทิ้ง!' }).then(async (result) => {
-        if (result.isConfirmed) { await deleteDoc(doc(db, "fuel", id)); window.renderUserReports(); Swal.fire('ลบสำเร็จ', '', 'success'); }
+    Swal.fire({ 
+        title: 'ต้องการลบคำขอนี้ใช่หรือไม่?', 
+        icon: 'warning', 
+        showCancelButton: true, 
+        confirmButtonColor: '#ef4444', 
+        confirmButtonText: 'ตกลง (ลบทิ้ง)',
+        cancelButtonText: 'ยกเลิก'
+    }).then(async (result) => {
+        if (result.isConfirmed) { 
+            await deleteDoc(doc(db, "fuel", id)); 
+            window.renderUserReports(); 
+            Swal.fire({title: 'ลบสำเร็จ', text: '', icon: 'success', confirmButtonText: 'ตกลง'}); 
+        }
     });
 }
 
@@ -204,4 +215,18 @@ window.editReport = async function(id) {
 }
 
 window.printReport = function() { window.print(); }
-window.exitSystem = function() { localStorage.removeItem('session_user_id'); window.location.href = 'login.html'; }
+window.exitSystem = function() { 
+    Swal.fire({ 
+        title: 'ออกจากระบบ', 
+        icon: 'question', 
+        showCancelButton: true, 
+        confirmButtonColor: '#ef4444', 
+        confirmButtonText: 'ตกลง (ออกจากระบบ)',
+        cancelButtonText: 'ยกเลิก'
+    }).then((result) => { 
+        if(result.isConfirmed) { 
+            localStorage.removeItem('session_user_id'); 
+            window.location.href = 'login.html'; 
+        } 
+    }); 
+}
