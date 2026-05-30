@@ -1,0 +1,411 @@
+/* style.css - Professional Desktop Dashboard Theme */
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+
+* {
+    box-sizing: border-box;
+    font-family: 'Sarabun', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #f0f4f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.mobile-container {
+    width: 100%;
+    height: 100vh;
+    background-color: #f0f4f8;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+}
+
+/* แถบเมนูด้านข้างหลัก (Sidebar) */
+.sidebar {
+    width: 260px;
+    background-color: #112246;
+    display: flex;
+    flex-direction: column;
+    padding-top: 30px;
+    gap: 10px;
+    z-index: 10;
+    box-shadow: 4px 0 20px rgba(17, 34, 70, 0.15);
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 14px 24px;
+    margin: 0 16px;
+    border-radius: 10px;
+    transition: all 0.25s ease;
+}
+
+.menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+}
+
+.menu-item.active {
+    background-color: #2563eb; 
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    font-weight: 600;
+}
+
+.menu-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    margin-right: 12px;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #f8fafc;
+    overflow: hidden;
+}
+
+.header {
+    padding: 16px 40px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.logo-container .title { color: #112246; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+.logo-container .subtitle { color: #94a3b8; font-size: 11px; letter-spacing: 4px; font-weight: 700; }
+
+.window-controls { display: flex; gap: 6px; }
+.win-btn { width: 28px; height: 28px; display: flex; justify-content: center; align-items: center; border-radius: 6px; cursor: pointer; font-size: 13px; color: #94a3b8; transition: 0.2s; }
+.win-btn:hover { background-color: #f1f5f9; color: #334155; }
+.win-btn.close:hover { background-color: #fee2e2; color: #ef4444; }
+
+.view-body {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+    max-width: 1400px; 
+    width: 100%;
+    margin: 0 auto;
+}
+
+.blue-panel {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 35px;
+    color: #334155;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+    border: 1px solid #e2e8f0;
+}
+
+.panel-title {
+    color: #112246;
+    text-align: left;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #f1f5f9;
+    font-weight: 700;
+    font-size: 20px;
+    margin-bottom: 30px;
+    position: relative;
+}
+.panel-title::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background-color: #2563eb;
+    border-radius: 3px;
+}
+
+.white-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    font-size: 14px;
+    line-height: 1.6;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.01);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.white-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.05);
+    border-color: #cbd5e1;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 14px;
+}
+.data-table th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 2px solid #e2e8f0;
+}
+.data-table td {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    background-color: #ffffff;
+}
+.data-table tr:hover td { background-color: #f8fafc; }
+
+.summary-box { margin-bottom: 25px; }
+.summary-card {
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 16px;
+    text-align: left;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+}
+.summary-box .col-md-6:first-child .summary-card,
+.summary-box .col-md-4:first-child .summary-card { border-left: 4px solid #2563eb; }
+.summary-box .col-md-6:last-child .summary-card,
+.summary-box .col-md-4:nth-child(2) .summary-card { border-left: 4px solid #10b981; }
+
+.summary-card h3 { color: #64748b; margin-bottom: 8px; font-size: 14px; font-weight: 600; text-transform: uppercase; }
+.summary-card p { color: #1e293b; font-size: 28px; font-weight: 700; }
+
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500; color: #475569; }
+.form-control, .form-select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    outline: none;
+    font-size: 14px;
+    color: #334155;
+    background-color: #f8fafc;
+    transition: all 0.2s ease;
+}
+.form-control:focus, .form-select:focus { 
+    border-color: #2563eb; 
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); 
+}
+
+.btn-pill {
+    padding: 12px 28px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-block;
+    text-align: center;
+}
+.btn-blue { background-color: #2563eb; color: white; }
+.btn-blue:hover { background-color: #1d4ed8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
+.btn-white { background-color: #112246; color: white; }
+.btn-white:hover { background-color: #1d3567; }
+.btn-red { background-color: #ef4444; color: white; }
+.btn-red:hover { background-color: #dc2626; }
+.btn-green { background-color: #10b981; color: white; }
+.btn-green:hover { background-color: #059669; }
+.btn-edit { background-color: #f59e0b; color: white; }
+.btn-edit:hover { background-color: #d97706; }
+
+.status-tag {
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+}
+.status-P { background-color: #fffbeb; color: #d97706; border: 1px solid #fde68a; } 
+.status-Y { background-color: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+.status-N { background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+
+#admin-verification-queue:empty::after, 
+#user-report-list:empty::after,
+#admin-reports-tbody:empty::after {
+    content: "📥 ยังไม่มีรายการข้อมูลในระบบขณะนี้";
+    display: block;
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px;
+    color: #94a3b8;
+    font-size: 15px;
+    font-weight: 500;
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    background-color: #f8fafc;
+}
+
+.mobile-container[style*="flex-direction: column"] {
+    background: radial-gradient(circle at center, #ffffff 0%, #f0f4f8 100%);
+}
+
+/* =========================================
+   การจัดการรูปภาพ (Avatar & Images)
+========================================= */
+
+/* กำหนดขนาดสูงสุดให้รูปภาพ ป้องกันการล้นเลย์เอาต์ */
+.avatar, .avatar-sm, .admin-user-tbody img, .user-list-tbody img, #header-avatar {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: cover;
+}
+
+/* รูปโปรไฟล์ขนาดใหญ่ */
+.avatar {
+    width: 120px !important;
+    height: 120px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border: 4px solid #ffffff;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    display: block;
+    margin: 0 auto;
+}
+
+/* รูปโปรไฟล์ขนาดเล็ก */
+.avatar-sm {
+    width: 45px !important;
+    height: 45px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border: 2px solid #e2e8f0;
+}
+
+/* กำหนดขนาดที่แน่นอนให้รูปพรีวิวแก้ไขโปรไฟล์ */
+#adm-avatar-display, #profile-avatar-display {
+    max-width: 130px;
+    max-height: 130px;
+    object-fit: cover;
+}
+
+/* รูปหลักฐานแนบเบิกน้ำมัน ทั่วไป */
+.receipt-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    margin-top: 15px;
+}
+
+/* รูปหลักฐานแบบย่อสำหรับคิวการอนุมัติ (คลิกได้) */
+.receipt-image-thumbnail {
+    max-width: 200px;
+    max-height: 150px;
+    cursor: pointer;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    transition: transform 0.2s;
+    object-fit: cover;
+}
+.receipt-image-thumbnail:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.clickable-image-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* =========================================
+   ตั้งค่าสำหรับการสั่งพิมพ์ (Print Media)
+========================================= */
+@media print {
+    .no-print, .sidebar, .header, .btn-pill, .window-controls { 
+        display: none !important; 
+    }
+    
+    body, .mobile-container, .main-content, .view-body { 
+        background-color: #ffffff !important; 
+        height: auto !important; 
+        overflow: visible !important; 
+    }
+    
+    .view-body { 
+        padding: 0 !important; 
+        margin: 0 !important; 
+        max-width: 100% !important; 
+    }
+    
+    .blue-panel { 
+        box-shadow: none !important; 
+        border: none !important; 
+        padding: 0 !important; 
+        margin: 0 !important; 
+    }
+    
+    .panel-title { 
+        color: #000 !important; 
+        border-bottom: 2px solid #000 !important; 
+    }
+    
+    .panel-title::after { display: none !important; }
+    
+    .data-table th, .data-table td { 
+        border: 1px solid #000 !important; 
+        color: #000 !important; 
+        padding: 8px !important;
+    }
+}
+
+/* =========================================
+   แก้ไขรูปโปรไฟล์และชื่อมุมขวาบน (Header Profile) ไม่ให้ล้น
+========================================= */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #eff6ff; /* เพิ่มพื้นหลังสีฟ้าอ่อนนุ่มๆ ให้ดูเด่น */
+    padding: 5px 16px 5px 6px;
+    border: 1px solid #dbeafe;
+    border-radius: 30px;       /* ทำเป็นทรงมนแคปซูลสไตล์ Dashboard */
+}
+
+.avatar-img, #header-avatar {
+    width: 38px !important;        /* กำหนดความกว้างตายตัวพอดีสายตา */
+    height: 38px !important;       /* กำหนดความสูงตายตัวให้เท่ากัน */
+    border-radius: 50% !important;  /* บังคับเป็นวงกลมเป๊ะๆ */
+    object-fit: cover !important;   /* ป้องกันรูปภาพยืดหรือบี้เสียทรง */
+    object-position: center !important; /* จัดโฟกัสให้อยู่กึ่งกลางภาพ */
+    border: 2px solid #ffffff;     /* ขอบสีขาวตัดกับพื้นหลัง */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.user-name, #header-user-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #2563eb; /* ข้อความชื่อสีน้ำเงินเข้ากับธีมระบบ */
+}

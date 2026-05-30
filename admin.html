@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>ผู้ดูแลระบบ - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="mobile-container">
+        <div class="sidebar">
+            <div style="color: white; font-weight: bold; font-size: 14px; text-align: center; margin-bottom: 20px;">ADMIN PANEL</div>
+            <div class="menu-item active" id="menu-profile" onclick="window.switchAdminTab('profile')"><div class="menu-icon">👤</div><span>ข้อมูลส่วนตัว</span></div>
+            <div class="menu-item" id="menu-approves" onclick="window.switchAdminTab('approves')"><div class="menu-icon">✔️</div><span>อนุมัติรายการ</span></div>
+            <div class="menu-item" id="menu-prices" onclick="window.switchAdminTab('prices')"><div class="menu-icon">⛽</div><span>ตั้งค่าราคาน้ำมัน</span></div>
+            <div class="menu-item" id="menu-users" onclick="window.switchAdminTab('users')"><div class="menu-icon">👥</div><span>จัดการพนักงาน</span></div>
+            <div class="menu-item" id="menu-reports" onclick="window.switchAdminTab('reports')"><div class="menu-icon">📊</div><span>ดูรายงานทั้งหมด</span></div>
+            <div class="menu-item" onclick="window.exitSystem()"><div class="menu-icon">🚪</div><span>ออกจากระบบ</span></div>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <div class="header-title">⚡ แผงผู้ดูแลระบบ (Admin)</div>
+                <div class="user-profile">
+                    <img id="header-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" class="avatar-img">
+                    <span id="header-user-name" class="user-name">กำลังโหลด...</span>
+                </div>
+            </div>
+
+            <div class="view-body p-4" style="height: calc(100vh - 70px); overflow-y: auto;">
+                
+                <div id="adm-profile-view" class="adm-tab-view">
+                    <div class="blue-panel">
+                        <h4 class="fw-bold mb-4">👤 แก้ไขข้อมูลส่วนตัว (ผู้ดูแลระบบ)</h4>
+                        <div class="row g-3">
+                            <div class="col-md-4 text-center">
+                                <img id="adm-avatar-display" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" class="rounded-circle border" style="width:130px; height:130px; object-fit:cover;">
+                                <div class="mt-2">
+                                    <input type="file" id="adm-avatar" class="form-control form-control-sm" accept="image/*">
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="row g-3">
+                                    <div class="col-sm-6"><label class="form-label">ชื่อจริง (frstname)</label><input type="text" id="adm-frstname" class="form-control"></div>
+                                    <div class="col-sm-6"><label class="form-label">นามสกุล (lastname)</label><input type="text" id="adm-lastname" class="form-control"></div>
+                                    <div class="col-sm-6"><label class="form-label">รหัสพนักงาน (user_id)</label><input type="text" id="adm-userid" class="form-control" disabled></div>
+                                    <div class="col-sm-6"><label class="form-label">รหัสผ่าน</label><input type="password" id="adm-password" class="form-control"></div>
+                                    <div class="col-sm-6"><label class="form-label">เบอร์โทรศัพท์ (Phone_number)</label><input type="text" id="adm-phone" class="form-control"></div>
+                                    <div class="col-sm-6"><label class="form-label">ตำแหน่ง (job_position)</label><input type="text" id="adm-position" class="form-control" disabled></div>
+                                </div>
+                                <button class="btn-pill btn-blue mt-4 px-4" onclick="window.updateAdminProfile()">💾 บันทึกการเปลี่ยนแปลง</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="adm-approves-view" class="adm-tab-view" style="display:none;">
+                    <h4 class="fw-bold text-dark mb-4">📋 รายการรอยืนยันอนุมัติค่าเดินทาง</h4>
+                    <div id="admin-verification-queue"></div>
+                </div>
+
+                <div id="adm-prices-view" class="adm-tab-view" style="display:none;">
+                    <div class="white-card p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="fw-bold m-0 text-dark">⛽ ตั้งค่าเรทราคากลางยานพาหนะ / เชื้อเพลิง</h4>
+                            <button class="btn-pill btn-blue" onclick="window.addNewFuel()">➕ เพิ่มเรทราคาใหม่</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped align-middle">
+                                <thead class="table-dark"><tr><th>รหัส</th><th>ชื่อประเภทรถ / เชื้อเพลิง</th><th>อัตราจ่าย (บาท/กม.)</th><th>การจัดการ</th></tr></thead>
+                                <tbody id="admin-fuel-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="adm-users-view" class="adm-tab-view" style="display:none;">
+                    <div class="white-card p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="fw-bold m-0 text-dark">👥 บัญชีรายชื่อพนักงานทั้งหมดในระบบ</h4>
+                            <button class="btn-pill btn-blue" onclick="window.addNewUser()">➕ เพิ่มพนักงานใหม่</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle" style="font-size: 13px;">
+                                <thead class="table-dark"><tr><th>รูป</th><th>รหัสพนักงาน</th><th>ชื่อ-นามสกุล</th><th>ตำแหน่ง/แผนก</th><th>สถานที่/เริ่มงาน</th><th>เบอร์โทร</th><th>จัดการ</th></tr></thead>
+                                <tbody id="admin-user-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="adm-reports-view" class="adm-tab-view" style="display:none;">
+                    <div class="white-card p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+                            <h4 class="fw-bold m-0 text-dark">📊 รายงานสรุปการเบิกจ่ายเงินค่าเดินทาง</h4>
+                            <button class="btn-pill btn-blue" onclick="window.printReport()">🖨️ พิมพ์เอกสารรายงาน</button>
+                        </div>
+
+                        <div class="row g-3 mb-4 p-3 border rounded bg-light no-print">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">เลือกกรองตามรายชื่อพนักงาน:</label>
+                                <select id="report-filter-user" class="form-select"></select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">เลือกกรองประจำเดือน:</label>
+                                <input type="month" id="report-filter-month" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle text-center">
+                                <thead class="table-primary"><tr><th>วันที่ทำงาน</th><th>เวลา</th><th>รหัสพนักงาน</th><th>รายละเอียดงาน</th><th>ระยะทาง (กม.)</th><th>ยอดเงินเบิก (บาท)</th><th>สถานะ</th></tr></thead>
+                                <tbody id="admin-reports-tbody"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-4 p-4 border rounded bg-light ms-auto" id="report-summary-box" style="max-width: 450px; border-top: 4px solid #2563eb !important;">
+                            <h5 class="fw-bold mb-3 pb-2 text-primary border-bottom">🧾 สรุปยอดรายละเอียดค่าใช้จ่าย</h5>
+                            <div class="d-flex justify-content-between mb-2"><span>จำนวนรายการเบิกในระบบ:</span><span class="fw-bold text-dark" id="rep-sum-count">0 รายการ</span></div>
+                            <div class="d-flex justify-content-between mb-2"><span>ระยะทางรวมสุทธิ:</span><span class="fw-bold text-dark" id="rep-sum-km">0 กม.</span></div>
+                            <div class="d-flex justify-content-between pt-2 border-top fs-5 fw-bold text-dark"><span>ยอดเงินรวมทั้งสิ้น:</span><span class="text-success" id="rep-sum-total">฿0.00</span></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script type="module" src="admin.js"></script>
+</body>
+</html>

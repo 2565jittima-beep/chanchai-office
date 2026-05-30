@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>ระบบจัดการค่าเชื้อเพลิง (พนักงาน)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="mobile-container">
+        <div class="sidebar">
+            <div style="color: white; font-weight: bold; font-size: 14px; text-align: center; margin-bottom: 20px;">USER PANEL</div>
+            <div class="menu-item active" id="menu-edit" onclick="window.switchTab('edit')"><div class="menu-icon">👤</div><span>ข้อมูลส่วนตัว</span></div>
+            <div class="menu-item" id="menu-work" onclick="window.switchTab('work')"><div class="menu-icon">⛽</div><span>แจ้งเบิกค่าเดินทาง</span></div>
+            <div class="menu-item" id="menu-report" onclick="window.switchTab('report')"><div class="menu-icon">📊</div><span>ประวัติและออกรายงาน</span></div>
+            <div class="menu-item" onclick="window.exitSystem()"><div class="menu-icon">🚪</div><span>ออกจากระบบ</span></div>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <div class="header-title">🚗 ระบบเบิกจ่ายค่าเดินทางพนักงาน</div>
+                <div class="user-profile">
+                    <img id="header-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" class="avatar-img">
+                    <span id="header-user-name" class="user-name">กำลังโหลด...</span>
+                </div>
+            </div>
+
+            <div class="view-body p-4" style="height: calc(100vh - 70px); overflow-y: auto;">
+                
+                <div id="tab-edit-view" class="tab-view">
+                    <div class="blue-panel">
+                        <h4 class="fw-bold mb-4">👤 ข้อมูลส่วนตัวผู้ใช้งาน</h4>
+                        <div class="row g-3">
+                            <div class="col-md-4 text-center">
+                                <img id="profile-avatar-display" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" class="rounded-circle border mb-2" style="width:130px; height:130px; object-fit:cover;">
+                                <input type="file" id="edit-avatar" class="form-control form-control-sm" accept="image/*">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="row g-3">
+                                    <div class="col-sm-6"><label class="form-label">ชื่อจริง (frstname)</label><input type="text" id="edit-frstname" class="form-control"></div>
+                                    <div class="col-sm-6"><label class="form-label">นามสกุล (lastname)</label><input type="text" id="edit-lastname" class="form-control"></div>
+                                    <div class="col-sm-6"><label class="form-label">รหัสผ่านสำหรับเข้าสู่ระบบ</label><input type="password" id="edit-password" class="form-control"></div>
+                                    <div class="col-sm-6"><label class="form-label">เบอร์โทรศัพท์ (Phone_number)</label><input type="text" id="edit-phone" class="form-control"></div>
+                                    <div class="col-sm-4"><label class="form-label">ตำแหน่ง (job_position)</label><input type="text" id="edit-position" class="form-control" disabled></div>
+                                    <div class="col-sm-4"><label class="form-label">แผนก (Department)</label><input type="text" id="edit-dept" class="form-control" disabled></div>
+                                    <div class="col-sm-4"><label class="form-label">สถานที่ทำงาน (work_location)</label><input type="text" id="edit-location" class="form-control" disabled></div>
+                                </div>
+                                <button class="btn-pill btn-blue mt-4 px-4" onclick="window.updateProfileData()">💾 บันทึกข้อมูลโปรไฟล์</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-work-view" class="tab-view" style="display:none;">
+                    <div class="white-card p-4">
+                        <h4 class="fw-bold mb-4 text-dark">⛽ บันทึกและส่งคำขอเบิกเงินค่าเดินทาง</h4>
+                        <input type="hidden" id="edit-report-id">
+                        
+                        <div class="row g-3">
+                            <div class="col-md-4"><label class="form-label fw-bold">วันที่เดินทางปฏิบัติงาน (work_date)</label><input type="date" id="w-date" class="form-control"></div>
+                            <div class="col-md-4"><label class="form-label fw-bold">เวลาปฏิบัติงาน (work_time)</label><input type="time" id="w-time" class="form-control"></div>
+                            <div class="col-md-4"><label class="form-label fw-bold">ประเภทเรทเชื้อเพลิงที่ใช้</label>
+                                <select id="w-fuel-type" class="form-select" onchange="window.calculateLiveExpense()"></select>
+                            </div>
+                            <div class="col-md-6"><label class="form-label fw-bold">ตัวเลขกิโลเมตรเริ่มต้น (เลขไมล์)</label><input type="number" id="w-start-mile" class="form-control" placeholder="0" oninput="window.calculateLiveExpense()"></div>
+                            <div class="col-md-6"><label class="form-label fw-bold">ตัวเลขกิโลเมตรสิ้นสุด (เลขไมล์)</label><input type="number" id="w-end-mile" class="form-control" placeholder="0" oninput="window.calculateLiveExpense()"></div>
+                            <div class="col-md-12"><label class="form-label fw-bold">รายละเอียดงาน (work_detail)</label><textarea id="w-detail" class="form-control" rows="3" placeholder="ระบุวัตถุประสงค์และเนื้องานย่อๆ..."></textarea></div>
+                            <div class="col-md-12"><label class="form-label fw-bold">แนบรูปภาพหลักฐาน (Image_file)</label><input type="file" id="w-file" class="form-control" accept="image/*"></div>
+                        </div>
+
+                        <div class="p-3 my-4 rounded border text-end bg-light d-flex justify-content-between align-items-center">
+                            <span class="text-secondary">💡 คำนวณเบื้องต้น:</span>
+                            <div>
+                                <span class="me-4">ระยะทางสุทธิ (distance_km): <strong class="text-dark" id="live-distance">0</strong> กม.</span>
+                                <span>ค่าใช้จ่ายเบิกชดเชย (Reimbursable_expense): <strong class="text-success fs-4">฿<span id="live-expense">0.00</span></strong></span>
+                            </div>
+                        </div>
+
+                        <button class="btn-pill btn-blue w-100 py-2 fs-5" onclick="window.saveWorkReport()">🚀 ส่งบันทึกคำขอไปให้แอดมินอนุมัติ</button>
+                    </div>
+                </div>
+
+                <div id="tab-report-view" class="tab-view" style="display:none;">
+                    <div class="white-card p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+                            <h4 class="fw-bold m-0 text-dark">📊 ตรวจสอบประวัติบิลแจ้งเบิกทั้งหมดของคุณ</h4>
+                            <button class="btn-pill btn-blue" onclick="window.printReport()">🖨️ พิมพ์รายงานสรุป</button>
+                        </div>
+
+                        <div class="row mb-4 align-items-center no-print">
+                            <div class="col-md-5"><label class="form-label fw-bold">📅 คัดกรองเลือกดูตามรายเดือน:</label><input type="month" id="user-report-month" class="form-control"></div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered text-center align-middle">
+                                <thead class="table-warning"><tr><th>ลำดับ</th><th>วันที่งาน</th><th>เวลา</th><th>รายละเอียดงาน</th><th>ระยะทาง</th><th>ยอดเงิน</th><th>สถานะ</th><th class="no-print">จัดการ</th></tr></thead>
+                                <tbody id="user-report-list"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-4 p-4 border rounded bg-light ms-auto" id="user-report-summary-box" style="max-width: 450px; border-top: 4px solid #f59e0b !important;">
+                            <h5 class="fw-bold mb-3 pb-2 text-warning border-bottom">🧾 สรุปยอดประจำเดือนที่คัดกรอง</h5>
+                            <div class="d-flex justify-content-between mb-2"><span>จำนวนรายการเบิก:</span><span class="fw-bold text-dark" id="user-bill-count">0 รายการ</span></div>
+                            <div class="d-flex justify-content-between mb-2"><span>ระยะทางรวม:</span><span class="fw-bold text-dark" id="user-bill-km">0 กม.</span></div>
+                            <div class="d-flex justify-content-between pt-2 border-top fs-5 fw-bold text-dark"><span>ยอดเงินรวม:</span><span class="text-success" id="user-bill-total">฿0.00</span></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script type="module" src="user.js"></script>
+</body>
+</html>
