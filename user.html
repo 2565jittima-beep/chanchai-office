@@ -38,13 +38,13 @@
                             </div>
                             <div class="col-md-8">
                                 <div class="row g-3">
-                                    <div class="col-sm-6"><label class="form-label">ชื่อจริง (frstname)</label><input type="text" id="edit-frstname" class="form-control"></div>
-                                    <div class="col-sm-6"><label class="form-label">นามสกุล (lastname)</label><input type="text" id="edit-lastname" class="form-control"></div>
+                                    <div class="col-sm-6"><label class="form-label">ชื่อจริง</label><input type="text" id="edit-frstname" class="form-control"></div>
+                                    <div class="col-sm-6"><label class="form-label">นามสกุล</label><input type="text" id="edit-lastname" class="form-control"></div>
                                     <div class="col-sm-6"><label class="form-label">รหัสผ่านสำหรับเข้าสู่ระบบ</label><input type="password" id="edit-password" class="form-control"></div>
-                                    <div class="col-sm-6"><label class="form-label">เบอร์โทรศัพท์ (Phone_number)</label><input type="text" id="edit-phone" class="form-control"></div>
-                                    <div class="col-sm-4"><label class="form-label">ตำแหน่ง (job_position)</label><input type="text" id="edit-position" class="form-control" disabled></div>
-                                    <div class="col-sm-4"><label class="form-label">แผนก (Department)</label><input type="text" id="edit-dept" class="form-control" disabled></div>
-                                    <div class="col-sm-4"><label class="form-label">สถานที่ทำงาน (work_location)</label><input type="text" id="edit-location" class="form-control" disabled></div>
+                                    <div class="col-sm-6"><label class="form-label">เบอร์โทรศัพท์</label><input type="text" id="edit-phone" class="form-control"></div>
+                                    <div class="col-sm-4"><label class="form-label">ตำแหน่ง</label><input type="text" id="edit-position" class="form-control" disabled></div>
+                                    <div class="col-sm-4"><label class="form-label">แผนก</label><input type="text" id="edit-dept" class="form-control" disabled></div>
+                                    <div class="col-sm-4"><label class="form-label">สถานที่ทำงาน</label><input type="text" id="edit-location" class="form-control" disabled></div>
                                 </div>
                                 <button class="btn-pill btn-blue mt-4 px-4" onclick="window.updateProfileData()">💾 บันทึกข้อมูลโปรไฟล์</button>
                             </div>
@@ -58,22 +58,22 @@
                         <input type="hidden" id="edit-report-id">
                         
                         <div class="row g-3">
-                            <div class="col-md-4"><label class="form-label fw-bold">วันที่เดินทางปฏิบัติงาน (work_date)</label><input type="date" id="w-date" class="form-control"></div>
-                            <div class="col-md-4"><label class="form-label fw-bold">เวลาปฏิบัติงาน (work_time)</label><input type="time" id="w-time" class="form-control"></div>
+                            <div class="col-md-4"><label class="form-label fw-bold">วันที่เดินทางปฏิบัติงาน</label><input type="date" id="w-date" class="form-control"></div>
+                            <div class="col-md-4"><label class="form-label fw-bold">เวลาปฏิบัติงาน</label><input type="time" id="w-time" class="form-control"></div>
                             <div class="col-md-4"><label class="form-label fw-bold">ประเภทเรทเชื้อเพลิงที่ใช้</label>
                                 <select id="w-fuel-type" class="form-select" onchange="window.calculateLiveExpense()"></select>
                             </div>
                             <div class="col-md-6"><label class="form-label fw-bold">ตัวเลขกิโลเมตรเริ่มต้น (เลขไมล์)</label><input type="number" id="w-start-mile" class="form-control" placeholder="0" oninput="window.calculateLiveExpense()"></div>
                             <div class="col-md-6"><label class="form-label fw-bold">ตัวเลขกิโลเมตรสิ้นสุด (เลขไมล์)</label><input type="number" id="w-end-mile" class="form-control" placeholder="0" oninput="window.calculateLiveExpense()"></div>
-                            <div class="col-md-12"><label class="form-label fw-bold">รายละเอียดงาน (work_detail)</label><textarea id="w-detail" class="form-control" rows="3" placeholder="ระบุวัตถุประสงค์และเนื้องานย่อๆ..."></textarea></div>
-                            <div class="col-md-12"><label class="form-label fw-bold">แนบรูปภาพหลักฐาน (Image_file)</label><input type="file" id="w-file" class="form-control" accept="image/*"></div>
+                            <div class="col-md-12"><label class="form-label fw-bold">รายละเอียดงาน</label><textarea id="w-detail" class="form-control" rows="3" placeholder="ระบุวัตถุประสงค์และเนื้องานย่อๆ..."></textarea></div>
+                            <div class="col-md-12"><label class="form-label fw-bold">แนบรูปภาพหลักฐาน</label><input type="file" id="w-file" class="form-control" accept="image/*"></div>
                         </div>
 
                         <div class="p-3 my-4 rounded border text-end bg-light d-flex justify-content-between align-items-center">
                             <span class="text-secondary">💡 คำนวณเบื้องต้น:</span>
                             <div>
-                                <span class="me-4">ระยะทางสุทธิ (distance_km): <strong class="text-dark" id="live-distance">0</strong> กม.</span>
-                                <span>ค่าใช้จ่ายเบิกชดเชย (Reimbursable_expense): <strong class="text-success fs-4">฿<span id="live-expense">0.00</span></strong></span>
+                                <span class="me-4">ระยะทางสุทธิ: <strong class="text-dark" id="live-distance">0</strong> กม.</span>
+                                <span>ค่าใช้จ่ายเบิกชดเชย: <strong class="text-success fs-4">฿<span id="live-expense">0.00</span></strong></span>
                             </div>
                         </div>
 

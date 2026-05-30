@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
     loadUserProfile();
     populateFuelDropdown();
     
-    // ตั้งค่าตัวเลือกเดือนและวันที่
     const now = new Date();
     const monthInput = document.getElementById('user-report-month');
     const dateInput = document.getElementById('user-report-date');
@@ -31,14 +30,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (monthInput) {
         monthInput.value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
         monthInput.addEventListener('change', () => {
-            if (dateInput) dateInput.value = ''; // เคลียร์วันที่ ถ้าเลือกเดือน
+            if (dateInput) dateInput.value = ''; 
             window.renderUserReports();
         });
     }
     
     if (dateInput) {
         dateInput.addEventListener('change', () => {
-            if (monthInput && dateInput.value) monthInput.value = ''; // เคลียร์เดือน ถ้าเลือกวันที่เป๊ะๆ
+            if (monthInput && dateInput.value) monthInput.value = ''; 
             window.renderUserReports();
         });
     }
@@ -183,7 +182,6 @@ window.renderUserReports = async function() {
     const selectedMonth = document.getElementById('user-report-month').value;
     const selectedDate = document.getElementById('user-report-date').value;
     
-    // ตรรกะการคัดกรอง
     let displayReports = myReports;
     if (selectedDate) {
         displayReports = displayReports.filter(r => r.work_date === selectedDate);

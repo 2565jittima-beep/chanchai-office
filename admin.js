@@ -112,15 +112,15 @@ async function renderEmployeeList() {
 window.addNewUser = function() {
     Swal.fire({
         title: 'เพิ่มพนักงานใหม่',
-        html: `<input id="swal-uid" class="swal2-input" placeholder="รหัสพนักงาน (user_id)" style="width: 80%;">
+        html: `<input id="swal-uid" class="swal2-input" placeholder="รหัสพนักงาน" style="width: 80%;">
                <input id="swal-pass" class="swal2-input" placeholder="รหัสผ่าน" style="width: 80%;">
-               <input id="swal-fname" class="swal2-input" placeholder="ชื่อจริง (frstname)" style="width: 80%;">
-               <input id="swal-lname" class="swal2-input" placeholder="นามสกุล (lastname)" style="width: 80%;">
-               <input id="swal-position" class="swal2-input" placeholder="ตำแหน่งงาน (job_position)" style="width: 80%;">
-               <input id="swal-loc" class="swal2-input" placeholder="สถานที่ปฏิบัติงาน (work_location)" style="width: 80%;">
-               <input id="swal-dept" class="swal2-input" placeholder="แผนก (Department)" style="width: 80%;">
+               <input id="swal-fname" class="swal2-input" placeholder="ชื่อจริง" style="width: 80%;">
+               <input id="swal-lname" class="swal2-input" placeholder="นามสกุล" style="width: 80%;">
+               <input id="swal-position" class="swal2-input" placeholder="ตำแหน่งงาน" style="width: 80%;">
+               <input id="swal-loc" class="swal2-input" placeholder="สถานที่ปฏิบัติงาน" style="width: 80%;">
+               <input id="swal-dept" class="swal2-input" placeholder="แผนก" style="width: 80%;">
                <input id="swal-sdate" class="swal2-input" type="date" placeholder="วันที่เริ่มงาน" style="width: 80%;">
-               <input id="swal-phone" class="swal2-input" placeholder="เบอร์โทรศัพท์ (Phone_number)" style="width: 80%;">
+               <input id="swal-phone" class="swal2-input" placeholder="เบอร์โทรศัพท์" style="width: 80%;">
                <select id="swal-role" class="swal2-input" style="width: 80%;"><option value="user">User</option><option value="admin">Admin</option></select>`,
         showCancelButton: true, confirmButtonText: 'ตกลง (บันทึก)', cancelButtonText: 'ยกเลิก',
         preConfirm: () => {
@@ -281,7 +281,7 @@ async function renderApprovalQueue() {
         
         container.innerHTML += `<div class="white-card d-flex justify-content-between align-items-center mb-3 p-3 border rounded shadow-sm">
             <div class="d-flex align-items-center gap-3">
-                <img src="${requestorAvatar}" class="avatar-sm" alt="รูปโปรไฟล์">
+                <img src="${requestorAvatar}" class="avatar-sm" alt="รูปโปรไฟล์ผู้ขอเบิก">
                 <div>
                     <div class="fw-bold fs-5 text-dark">ผู้ขอเบิก: ${u.frstname || 'ไม่ทราบชื่อ'} (${r.user_id})</div>
                     <div class="text-secondary mt-1">วันที่ทำงาน: <strong>${r.work_date} (${r.work_time || ''})</strong></div>
