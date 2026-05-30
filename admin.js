@@ -88,7 +88,7 @@ window.updateAdminProfile = async function() {
 
 async function renderEmployeeList() {
     const tbody = document.getElementById('admin-user-tbody');
-    tbody.innerHTML = '<tr><td colspan="7">กำลังโหลดข้อมูล...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="py-3">กำลังโหลดข้อมูล...</td></tr>';
     
     const querySnapshot = await getDocs(collection(db, "users"));
     tbody.innerHTML = '';
@@ -98,13 +98,13 @@ async function renderEmployeeList() {
         let roleBadge = u.role === 'admin' ? '<span class="badge bg-primary">Admin</span>' : '<span class="badge bg-secondary">User</span>';
         let avatarImg = u.Image_file || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150";
         tbody.innerHTML += `<tr>
-            <td><img src="${avatarImg}" class="avatar-sm"></td>
-            <td><strong>${u.user_id}</strong><br>${roleBadge}</td>
+            <td class="text-center"><img src="${avatarImg}" class="avatar-sm"></td>
+            <td class="text-center"><strong>${u.user_id}</strong><br>${roleBadge}</td>
             <td>${u.frstname} ${u.lastname}</td>
             <td>${u.job_position}<br><small class="text-muted">${u.Department}</small></td>
             <td>${u.work_location}<br><small class="text-muted">${u.start_date}</small></td>
-            <td>${u.Phone_number}</td>
-            <td>${actionBtns}</td>
+            <td class="text-center">${u.Phone_number}</td>
+            <td class="text-center">${actionBtns}</td>
         </tr>`;
     });
 }
@@ -215,7 +215,7 @@ window.renderAllReports = async function() {
 
     tbody.innerHTML = '';
     if (filtered.length === 0) { 
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center">ไม่พบข้อมูลรายงานในเงื่อนไขนี้</td></tr>'; 
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">ไม่พบข้อมูลรายงานในเงื่อนไขนี้</td></tr>'; 
         document.getElementById('rep-sum-count').innerText = `0 รายการ`;
         document.getElementById('rep-sum-km').innerText = `0 กม.`;
         document.getElementById('rep-sum-total').innerText = `฿0.00`;
@@ -237,7 +237,6 @@ window.renderAllReports = async function() {
     document.getElementById('rep-sum-total').innerText = `฿${totalBaht.toFixed(2)}`;
 }
 
-// ฟังก์ชันสำหรับกดดูรูปภาพขนาดใหญ่กลางจอ
 window.viewImageFullscreen = function(url) {
     Swal.fire({
         imageUrl: url,
@@ -282,7 +281,7 @@ async function renderApprovalQueue() {
         
         container.innerHTML += `<div class="white-card d-flex justify-content-between align-items-center mb-3 p-3 border rounded shadow-sm">
             <div class="d-flex align-items-center gap-3">
-                <img src="${requestorAvatar}" class="avatar-sm" alt="รูปโปรไฟล์ผู้ขอเบิก">
+                <img src="${requestorAvatar}" class="avatar-sm" alt="รูปโปรไฟล์">
                 <div>
                     <div class="fw-bold fs-5 text-dark">ผู้ขอเบิก: ${u.frstname || 'ไม่ทราบชื่อ'} (${r.user_id})</div>
                     <div class="text-secondary mt-1">วันที่ทำงาน: <strong>${r.work_date} (${r.work_time || ''})</strong></div>
@@ -332,14 +331,22 @@ window.processApproval = function(reportId, newStatus) {
 }
 
 async function loadFuelSettings() {
-    const tbody = document.getElementById('admin-fuel-tbody'); tbody.innerHTML = '<tr><td colspan="5">กำลังโหลดข้อมูลราคาน้ำมัน...</td></tr>';
+    const tbody = document.getElementById('admin-fuel-tbody'); 
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3">กำลังโหลดข้อมูลราคาน้ำมัน...</td></tr>';
+    
     const q = await getDocs(collection(db, "fuels"));
     tbody.innerHTML = '';
+    
+    let idx = 1; 
     q.forEach(docSnap => {
         const f = docSnap.data();
+        let badgeColor = f.type === 'ไฟฟ้า' ? '#10b981' : (f.type === 'แก๊ส' ? '#f59e0b' : '#64748b');
+        
         tbody.innerHTML += `<tr>
-            <td>${f.id}</td><td>${f.type || 'ทั่วไป'}</td><td><strong>${f.name}</strong></td>
-            <td><input type="number" step="0.01" class="form-control fuel-rate-input text-center mx-auto" data-id="${f.id}" value="${f.rate}" style="max-width:150px;"></td>
+            <td>${idx++}</td>
+            <td><span class="status-tag" style="background:${badgeColor}; color:white; border:none; min-width:80px;">${f.type || 'ทั่วไป'}</span></td>
+            <td class="text-start ps-3"><strong>${f.name}</strong></td>
+            <td><input type="number" step="0.01" class="form-control fuel-rate-input text-center mx-auto" data-id="${f.id}" value="${f.rate}" style="max-width:120px;"></td>
             <td><button class="btn-pill btn-red py-1 px-2" style="font-size:12px;" onclick="window.deleteFuel('${f.id}')">🗑️ ลบ</button></td>
         </tr>`;
     });

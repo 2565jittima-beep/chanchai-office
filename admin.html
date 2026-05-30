@@ -68,8 +68,16 @@
                         </div>
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped align-middle">
-                                <thead class="table-dark"><tr><th>รหัส</th><th>ชื่อประเภทรถ / เชื้อเพลิง</th><th>อัตราจ่าย (บาท/กม.)</th><th>การจัดการ</th></tr></thead>
-                                <tbody id="admin-fuel-tbody"></tbody>
+                                <thead class="table-dark text-center">
+                                    <tr>
+                                        <th style="width: 80px;">ลำดับ</th>
+                                        <th style="width: 150px;">กลุ่มพลังงาน</th>
+                                        <th>ชื่อประเภท / เชื้อเพลิง</th>
+                                        <th style="width: 200px;">อัตราจ่าย (บาท/กม.)</th>
+                                        <th style="width: 120px;">การจัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-fuel-tbody" class="text-center"></tbody>
                             </table>
                         </div>
                         <div class="text-center mt-4"><button class="btn-pill btn-white px-4" onclick="window.updateFuelPrices()">💾 บันทึกอัตราอัปเดต</button></div>
