@@ -91,11 +91,21 @@
                         <div class="summary-box row g-3 mb-4 no-print">
                             <div class="col-md-4"><div class="summary-card h-100"><h3>รวมยอดเบิกสะสมตลอดชีพ (บาท)</h3><p id="sum-total">0.00</p></div></div>
                             <div class="col-md-4"><div class="summary-card h-100"><h3>ระยะทางรวมตลอดชีพ (กม.)</h3><p id="sum-km">0</p></div></div>
-                            <div class="col-md-4"><div class="summary-card h-100" style="border-left: 4px solid #f59e0b !important;"><h3>ระยะทางประจำเดือนที่เลือก (กม.)</h3><p id="sum-month-km" class="text-warning fw-bold">0</p></div></div>
+                            <div class="col-md-4"><div class="summary-card h-100" style="border-left: 4px solid #f59e0b !important;"><h3 id="card-filter-title">ระยะทางประจำเดือนที่เลือก (กม.)</h3><p id="sum-month-km" class="text-warning fw-bold">0</p></div></div>
                         </div>
 
-                        <div class="row mb-4 align-items-center no-print">
-                            <div class="col-md-5"><label class="form-label fw-bold">📅 คัดกรองเลือกดูตามรายเดือน:</label><input type="month" id="user-report-month" class="form-control"></div>
+                        <div class="row g-3 mb-4 p-3 border rounded bg-light align-items-end no-print">
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold">📅 คัดกรองตามเดือน:</label>
+                                <input type="month" id="user-report-month" class="form-control">
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold">🔍 ค้นหาจากวันที่ระบุ:</label>
+                                <input type="date" id="user-report-date" class="form-control">
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn-pill btn-white w-100 py-2" onclick="window.clearUserFilters()">🔄 ล้างค่า</button>
+                            </div>
                         </div>
 
                         <div class="table-responsive">
@@ -106,7 +116,7 @@
                         </div>
 
                         <div class="mt-4 p-4 border rounded bg-light ms-auto" id="user-report-summary-box" style="max-width: 450px; border-top: 4px solid #f59e0b !important;">
-                            <h5 class="fw-bold mb-3 pb-2 text-warning border-bottom">🧾 สรุปยอดประจำเดือนที่คัดกรอง</h5>
+                            <h5 class="fw-bold mb-3 pb-2 text-warning border-bottom" id="user-summary-title">🧾 สรุปยอดประจำเดือนที่คัดกรอง</h5>
                             <div class="d-flex justify-content-between mb-2"><span>จำนวนรายการเบิก:</span><span class="fw-bold text-dark" id="user-bill-count">0 รายการ</span></div>
                             <div class="d-flex justify-content-between mb-2"><span>ระยะทางรวม:</span><span class="fw-bold text-dark" id="user-bill-km">0 กม.</span></div>
                             <div class="d-flex justify-content-between pt-2 border-top fs-5 fw-bold text-dark"><span>ยอดเงินรวม:</span><span class="text-success" id="user-bill-total">฿0.00</span></div>

@@ -23,14 +23,35 @@ document.addEventListener("DOMContentLoaded", () => {
     loadUserProfile();
     populateFuelDropdown();
     
+    // ตั้งค่าตัวเลือกเดือนและวันที่
     const now = new Date();
     const monthInput = document.getElementById('user-report-month');
+    const dateInput = document.getElementById('user-report-date');
+    
     if (monthInput) {
         monthInput.value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
-        monthInput.addEventListener('change', window.renderUserReports);
+        monthInput.addEventListener('change', () => {
+            if (dateInput) dateInput.value = ''; // เคลียร์วันที่ ถ้าเลือกเดือน
+            window.renderUserReports();
+        });
     }
+    
+    if (dateInput) {
+        dateInput.addEventListener('change', () => {
+            if (monthInput && dateInput.value) monthInput.value = ''; // เคลียร์เดือน ถ้าเลือกวันที่เป๊ะๆ
+            window.renderUserReports();
+        });
+    }
+    
     window.switchTab('edit'); 
 });
+
+window.clearUserFilters = function() {
+    const now = new Date();
+    document.getElementById('user-report-month').value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+    document.getElementById('user-report-date').value = '';
+    window.renderUserReports();
+}
 
 async function updateHeaderDisplay() {
     const docSnap = await getDoc(doc(db, "users", currentUserId));
@@ -160,13 +181,28 @@ window.renderUserReports = async function() {
     myReports.sort((a,b) => b.id.localeCompare(a.id));
     
     const selectedMonth = document.getElementById('user-report-month').value;
-    let displayReports = selectedMonth ? myReports.filter(r => r.work_date.startsWith(selectedMonth)) : myReports;
+    const selectedDate = document.getElementById('user-report-date').value;
+    
+    // ตรรกะการคัดกรอง
+    let displayReports = myReports;
+    if (selectedDate) {
+        displayReports = displayReports.filter(r => r.work_date === selectedDate);
+        document.getElementById('user-summary-title').innerText = '🧾 สรุปยอดตามวันที่ระบุ';
+        document.getElementById('card-filter-title').innerText = 'ระยะทางของวันที่เลือก (กม.)';
+    } else if (selectedMonth) {
+        displayReports = displayReports.filter(r => r.work_date.startsWith(selectedMonth));
+        document.getElementById('user-summary-title').innerText = '🧾 สรุปยอดประจำเดือนที่คัดกรอง';
+        document.getElementById('card-filter-title').innerText = 'ระยะทางประจำเดือนที่เลือก (กม.)';
+    } else {
+        document.getElementById('user-summary-title').innerText = '🧾 สรุปยอดทั้งหมด';
+        document.getElementById('card-filter-title').innerText = 'ระยะทางที่คัดกรอง (กม.)';
+    }
     
     tbody.innerHTML = '';
     let filteredCount = 0, filteredKm = 0, filteredBaht = 0;
     
     if (displayReports.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">📥 ไม่พบข้อมูลรายงานในเดือนนี้</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">📥 ไม่พบข้อมูลรายงานในเงื่อนไขการค้นหานี้</td></tr>';
     } else {
         displayReports.forEach((r, idx) => {
             if(r.Approve_disbursement !== 'N') { 
