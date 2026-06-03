@@ -16,6 +16,8 @@ const db = getFirestore(app);
 
 let currentUserId = localStorage.getItem('session_user_id');
 let currentRate = 0; 
+let currentUploadedImageBase64 = ""; // ตัวแปรกลางสำหรับเก็บภาพ Base64 (ไม่ว่าจะมาจากไฟล์หรือกล้อง)
+let cameraStream = null; // เก็บออบเจกต์สตรีมของกล้องเพื่อเปิด/ปิดใช้งาน
 
 document.addEventListener("DOMContentLoaded", () => {
     if (!currentUserId) { window.location.href = 'login.html'; return; }
@@ -68,6 +70,7 @@ window.switchTab = function(targetTab) {
     if(document.getElementById(`menu-${targetTab}`)) document.getElementById(`menu-${targetTab}`).classList.add('active');
     
     if (targetTab === 'report') window.renderUserReports();
+    if (targetTab !== 'work') window.stopCamera(); // ปิดกล้องอัตโนมัติหากผู้ใช้งานคลิกเปลี่ยนไปแท็บอื่น
 }
 
 async function loadUserProfile() {
@@ -124,6 +127,78 @@ window.calculateLiveExpense = function() {
     document.getElementById('live-distance').innerText = distance; document.getElementById('live-expense').innerText = (distance * currentRate).toFixed(2);
 }
 
+// ฟังก์ชันเสริมจัดการระบบเลือกไฟล์ภาพปกติ
+window.handleFileSelect = function(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            currentUploadedImageBase64 = e.target.result;
+            document.getElementById('image-preview').src = currentUploadedImageBase64;
+            document.getElementById('image-preview-container').style.display = 'block';
+            window.stopCamera(); // ถ้าเปิดกล้องค้างไว้ให้ปิด เพื่อให้ความสำคัญกับรูปจากไฟล์ล่าสุด
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// ฟังก์ชันเปิดสตรีมมิ่งกล้องถ่ายรูป
+window.startCamera = async function() {
+    document.getElementById('camera-container').style.display = 'block';
+    try {
+        // บังคับเลือก facingMode: "environment" เพื่อดึงกล้องหลังของมือถือมาถ่ายบิล/เลขไมล์
+        cameraStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: "environment" } 
+        });
+        const videoElement = document.getElementById('webcam');
+        videoElement.srcObject = cameraStream;
+    } catch (err) {
+        console.error("ไม่สามารถเข้าถึงกล้องได้:", err);
+        Swal.fire({ icon: 'error', title: 'กล้องไม่พร้อมใช้งาน', text: 'ไม่สามารถเปิดใช้งานกล้องได้ กรุณาตรวจสอบการอนุญาตสิทธิ์ หรือใช้วิธีอัปโหลดรูปภาพปกติแทน', confirmButtonText: 'ตกลง' });
+        document.getElementById('camera-container').style.display = 'none';
+    }
+}
+
+// ฟังก์ชันกด Capture ภาพถ่ายจากวิดีโอสตีมลง Canvas
+window.capturePhoto = function() {
+    const video = document.getElementById('webcam');
+    const canvas = document.getElementById('canvas');
+    if (cameraStream && video.videoWidth > 0) {
+        const context = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // แปลงผลลัพธ์เป็นภาพ Base64
+        currentUploadedImageBase64 = canvas.toDataURL('image/jpeg');
+        
+        // ส่งผลลัพธ์ไปยังส่วนแสดงรูป Preview และเคลียร์ค่าช่อง input file ปกติ
+        document.getElementById('image-preview').src = currentUploadedImageBase64;
+        document.getElementById('image-preview-container').style.display = 'block';
+        document.getElementById('w-file').value = ""; 
+
+        window.stopCamera();
+    }
+}
+
+// ฟังก์ชันหยุดกล้องและซ่อนหน้าจอกล้อง
+window.stopCamera = function() {
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+    }
+    const videoElement = document.getElementById('webcam');
+    if (videoElement) videoElement.srcObject = null;
+    document.getElementById('camera-container').style.display = 'none';
+}
+
+// ฟังก์ชันเคลียร์ค่ารูปภาพทั้งหมดออก
+window.clearSelectedImage = function() {
+    currentUploadedImageBase64 = "";
+    document.getElementById('w-file').value = "";
+    document.getElementById('image-preview-container').style.display = 'none';
+    document.getElementById('image-preview').src = "";
+}
+
 window.saveWorkReport = async function() {
     const editId = document.getElementById('edit-report-id').value;
     const wDate = document.getElementById('w-date').value;
@@ -132,7 +207,6 @@ window.saveWorkReport = async function() {
     const start = parseFloat(document.getElementById('w-start-mile').value);
     const end = parseFloat(document.getElementById('w-end-mile').value);
     const detail = document.getElementById('w-detail').value.trim();
-    const fileInput = document.getElementById('w-file');
     
     if(!wDate || !fuelType || isNaN(start) || isNaN(end) || !detail) return Swal.fire({ icon: 'warning', title: 'กรุณากรอกข้อมูลงานและเลขไมล์ให้ครบถ้วน', confirmButtonText: 'ตกลง' });
     if (end <= start) return Swal.fire({ icon: 'error', title: 'เลขไมล์สิ้นสุดต้องมากกว่าเลขไมล์เริ่มต้น', confirmButtonText: 'ตกลง' });
@@ -140,36 +214,35 @@ window.saveWorkReport = async function() {
     const distance = end - start;
     const expense = distance * currentRate;
     
-    const executeSaving = async (base64Img) => {
-        let reportData = {
-            user_id: currentUserId, 
-            work_date: wDate, 
-            work_time: wTime || '00:00',
-            distance_km: distance, 
-            work_detail: detail, 
-            Reimbursable_expense: expense.toFixed(2), 
-            Approve_disbursement: "P"
-        };
-        if(base64Img) reportData.Image_file = base64Img;
-
-        if (editId) {
-            await updateDoc(doc(db, "fuel", editId), reportData);
-        } else {
-            const newId = "REP" + Date.now();
-            await setDoc(doc(db, "fuel", newId), reportData);
-        }
-        
-        Swal.fire({ icon: 'success', title: 'ส่งคำขอเบิกค่าเดินทางสำเร็จ!', confirmButtonText: 'ตกลง' }).then(() => {
-            document.getElementById('edit-report-id').value = ''; 
-            document.getElementById('w-start-mile').value = ''; 
-            document.getElementById('w-end-mile').value = ''; 
-            document.getElementById('w-detail').value = '';
-            document.getElementById('w-file').value = '';
-            window.calculateLiveExpense(); window.switchTab('report');
-        });
+    let reportData = {
+        user_id: currentUserId, 
+        work_date: wDate, 
+        work_time: wTime || '00:00',
+        distance_km: distance, 
+        work_detail: detail, 
+        Reimbursable_expense: expense.toFixed(2), 
+        Approve_disbursement: "P"
     };
     
-    if (fileInput.files.length > 0) { const r = new FileReader(); r.onload = e => executeSaving(e.target.result); r.readAsDataURL(fileInput.files[0]); } else { executeSaving(""); }
+    // แนบรูปภาพ Base64 ไปกับ Object ข้อมูลถ้ามีรูปอยู่
+    if(currentUploadedImageBase64) reportData.Image_file = currentUploadedImageBase64;
+
+    if (editId) {
+        await updateDoc(doc(db, "fuel", editId), reportData);
+    } else {
+        const newId = "REP" + Date.now();
+        await setDoc(doc(db, "fuel", newId), reportData);
+    }
+    
+    Swal.fire({ icon: 'success', title: 'ส่งคำขอเบิกค่าเดินทางสำเร็จ!', confirmButtonText: 'ตกลง' }).then(() => {
+        document.getElementById('edit-report-id').value = ''; 
+        document.getElementById('w-start-mile').value = ''; 
+        document.getElementById('w-end-mile').value = ''; 
+        document.getElementById('w-detail').value = '';
+        window.clearSelectedImage(); // เคลียร์ฟอร์มและรูปพรีวิวทั้งหมดหลังบันทึกเสร็จ
+        window.calculateLiveExpense(); 
+        window.switchTab('report');
+    });
 }
 
 window.renderUserReports = async function() {
@@ -259,6 +332,16 @@ window.editReport = async function(id) {
         document.getElementById('w-date').value = r.work_date; 
         document.getElementById('w-time').value = r.work_time || ''; 
         document.getElementById('w-detail').value = r.work_detail;
+        
+        // ดึงรูปภาพเก่าขึ้นมาพรีวิวแสดงผลในระบบด้วยเมื่อกดแก้ไขข้อมูล
+        if(r.Image_file) {
+            currentUploadedImageBase64 = r.Image_file;
+            document.getElementById('image-preview').src = r.Image_file;
+            document.getElementById('image-preview-container').style.display = 'block';
+        } else {
+            window.clearSelectedImage();
+        }
+
         window.switchTab('work'); 
         window.calculateLiveExpense(); 
         Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'ดึงข้อมูลเก่ามาแก้ไขแล้ว', showConfirmButton: false, timer: 2000 });
